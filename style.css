@@ -135,6 +135,11 @@ background:rgba(255,255,255,0.1);
 padding:15px;
 border-radius:10px;
 }
+.output p{
+word-wrap: break-word;
+white-space: pre-wrap;
+line-height: 1.6;
+}
 
 /* COPY BUTTON */
 

@@ -1,3 +1,5 @@
+/* ===== SUMMARIZE FUNCTION ===== */
+
 function summarize(){
 
 let text = document.getElementById("inputText").value
@@ -7,26 +9,34 @@ alert("Enter some text")
 return
 }
 
+/* Fix spacing issues */
+
+text = text.replace(/\s+/g," ").trim()
+
 let sentences = text.split(".")
 
-let summary = sentences.slice(0,3).join(".")
+let summary = sentences.slice(0,3).join(". ") + "."
 
 typeWriter(summary)
 
 }
 
+
+/* ===== TYPEWRITER EFFECT ===== */
+
 function typeWriter(text){
 
 let i = 0
-let speed = 25
+let speed = 20
 
-document.getElementById("summary").innerText = ""
+let output = document.getElementById("summary")
+output.innerText = ""
 
 function typing(){
 
 if(i < text.length){
 
-document.getElementById("summary").innerText += text.charAt(i)
+output.innerText += text.charAt(i)
 
 i++
 
@@ -39,20 +49,23 @@ setTimeout(typing, speed)
 typing()
 
 }
-/* WORD COUNTER */
+
+
+/* ===== WORD COUNTER ===== */
 
 document.getElementById("inputText").addEventListener("input", function(){
 
-let words = this.value.trim().split(/\s+/)
+let text = this.value.trim()
 
-let count = this.value.length === 0 ? 0 : words.length
+let words = text === "" ? [] : text.split(/\s+/)
 
 document.getElementById("wordCount").innerText =
-"Words: " + count
+"Words: " + words.length
 
 })
 
-/* COPY SUMMARY */
+
+/* ===== COPY SUMMARY ===== */
 
 function copySummary(){
 
@@ -64,20 +77,26 @@ alert("Summary copied!")
 
 }
 
-/* DARK MODE */
+
+/* ===== DARK / LIGHT MODE ===== */
 
 function toggleMode(){
 
 document.body.classList.toggle("light")
 
 }
+
+
+/* ===== FILE UPLOAD (PDF + IMAGE) ===== */
+
 document.getElementById("fileUpload").addEventListener("change", function(event){
 
 let file = event.target.files[0]
 
 if(!file) return
 
-/* PDF FILE */
+
+/* ===== PDF FILE ===== */
 
 if(file.type === "application/pdf"){
 
@@ -94,11 +113,18 @@ let pages = []
 for(let i = 1; i <= pdf.numPages; i++){
 
 pages.push(
+
 pdf.getPage(i).then(function(page){
 
-return page.getTextContent().then(function(text){
+return page.getTextContent().then(function(content){
 
-return text.items.map(item => item.str).join(" ")
+/* FIX SPACING */
+
+let text = content.items.map(item => item.str).join(" ")
+
+text = text.replace(/\s+/g," ").trim()
+
+return text
 
 })
 
@@ -110,7 +136,9 @@ return text.items.map(item => item.str).join(" ")
 
 Promise.all(pages).then(function(texts){
 
-document.getElementById("inputText").value = texts.join(" ")
+let finalText = texts.join(" ")
+
+document.getElementById("inputText").value = finalText
 
 })
 
@@ -122,7 +150,8 @@ reader.readAsArrayBuffer(file)
 
 }
 
-/* IMAGE FILE */
+
+/* ===== IMAGE OCR ===== */
 
 else if(file.type.startsWith("image/")){
 
@@ -130,7 +159,10 @@ Tesseract.recognize(
 file,
 "eng",
 { logger: m => console.log(m) }
+
 ).then(({ data: { text } }) => {
+
+text = text.replace(/\s+/g," ").trim()
 
 document.getElementById("inputText").value = text
 
@@ -145,51 +177,69 @@ alert("Upload PDF or Image")
 }
 
 })
+
+
+/* ===== DRAG EFFECT ===== */
+
 let uploadArea = document.getElementById("uploadArea")
 
 uploadArea.addEventListener("dragover", function(e){
+
 e.preventDefault()
 uploadArea.style.borderColor = "#22c55e"
+
 })
 
 uploadArea.addEventListener("dragleave", function(){
+
 uploadArea.style.borderColor = ""
+
 })
+
+
+/* ===== PARTICLE BACKGROUND ===== */
+
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight
 
-let particles = [];
+let particles = []
 
 for(let i=0;i<60;i++){
+
 particles.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
 r:Math.random()*2+1,
 dx:(Math.random()-0.5),
 dy:(Math.random()-0.5)
-});
+})
+
 }
 
 function animateParticles(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
 
 particles.forEach(p=>{
-ctx.beginPath();
-ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-ctx.fillStyle="rgba(255,255,255,0.3)";
-ctx.fill();
 
-p.x+=p.dx;
-p.y+=p.dy;
+ctx.beginPath()
+ctx.arc(p.x,p.y,p.r,0,Math.PI*2)
+ctx.fillStyle="rgba(255,255,255,0.3)"
+ctx.fill()
 
-if(p.x<0||p.x>canvas.width) p.dx*=-1;
-if(p.y<0||p.y>canvas.height) p.dy*=-1;
-});
+p.x+=p.dx
+p.y+=p.dy
 
-requestAnimationFrame(animateParticles);
+if(p.x<0||p.x>canvas.width) p.dx*=-1
+if(p.y<0||p.y>canvas.height) p.dy*=-1
+
+})
+
+requestAnimationFrame(animateParticles)
+
 }
 
-animateParticles();
+animateParticles()

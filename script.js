@@ -95,6 +95,9 @@ let file = event.target.files[0]
 
 if(!file) return
 
+document.getElementById("fileName").innerText =
+"Selected file: " + file.name
+
 
 /* ===== PDF FILE ===== */
 
